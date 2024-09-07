@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { body, param } from 'express-validator'
 import { ProjectController } from '../controllers/Project.controller'
 import { handleInputErrors } from '../middleware/validation'
+import { TaskController } from '../controllers/Task.controller'
 
 const router = Router()
 
@@ -36,5 +37,9 @@ router.delete('/:id',
   ProjectController.deleteProjectById
 )
 
+/* Routes for Tasks */
+router.post('/:projectId/tasks',
+  TaskController.createTask
+)
 
 export default router
