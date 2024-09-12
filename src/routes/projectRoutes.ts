@@ -68,4 +68,10 @@ router.put('/:projectId/tasks/:taskId',
   TaskController.updateTaskById
 )
 
+router.delete('/:projectId/tasks/:taskId',
+  param('taskId').isMongoId().withMessage('Invalid ID'),
+  handleInputErrors, 
+  TaskController.deleteTaskById
+)
+
 export default router
