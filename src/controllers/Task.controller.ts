@@ -109,4 +109,28 @@ export class TaskController {
       res.status(500).json({error: 'Server Error'})
     }
   }
+
+  static updateTaskStatus = async (req:Request, res: Response) => {
+    try {
+      const { taskId } = req.params
+
+      const task = await Task.findById(taskId)
+
+      if(!task) {
+        const error = new Error('The Task doesn\'t exist' )
+        return res.status(404).json({
+          error: error.message
+        })
+      }
+
+      const { status } = req.body
+      task.status = status
+
+      await task.save()
+      res.send('The Task was succesfully updated!')
+
+    } catch (error) {
+      res.status(500).json({error: 'Server Error'})
+    }
+  }
 }
