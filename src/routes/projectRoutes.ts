@@ -39,8 +39,11 @@ router.delete('/:id',
 )
 
 /* Routes for Tasks */
+
+// Este endpoint valida projectId en todos los endpoints donde venga
+router.param('projectId', validateProjectExist)
+
 router.post('/:projectId/tasks',
-  validateProjectExist,
   body('name').trim().notEmpty().withMessage('Task\'s name is required'),
   body('description').trim().notEmpty().withMessage('Task\'s description is required'),
   handleInputErrors,
@@ -48,12 +51,12 @@ router.post('/:projectId/tasks',
 )
 
 router.get('/:projectId/tasks',
-  validateProjectExist,
   TaskController.getProjectTasks
 )
 
 router.get('/:projectId/tasks/:taskId',
-  validateProjectExist,
+  param('taskId').isMongoId().withMessage('Invalid ID'),
+  handleInputErrors, 
   TaskController.getTaskById
 )
 
