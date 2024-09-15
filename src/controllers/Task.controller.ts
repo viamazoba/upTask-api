@@ -34,13 +34,6 @@ export class TaskController {
   static getTaskById = async (req:Request, res: Response) => {
     try {
 
-      if(req.task.project.toString() !== req.project.id) {
-        const error = new Error('The Task doesn\'t exist in the Project' )
-        return res.status(400).json({
-          error: error.message
-        })
-      }
-
       res.json(req.task)
     } catch (error) {
       res.status(500).json({error: 'Server Error'})

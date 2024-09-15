@@ -46,7 +46,7 @@ export class ProjectController {
   static updateProject = async(req: Request, res: Response) => {
     const { id } = req.params
     try {
-      const project = await Project.findByIdAndUpdate(id, req.body)
+      const project = await Project.findById(id)
 
       if(!project) {
         const error = new Error('The Project doesn\'t exist' )
@@ -54,6 +54,11 @@ export class ProjectController {
           error: error.message
         })
       }
+
+      project.clientName = req.body.clientName
+      project.projectName = req.body.projectName
+      project.description = req.body.description
+
 
       await project.save()
       res.send('Project updated succesfully!')

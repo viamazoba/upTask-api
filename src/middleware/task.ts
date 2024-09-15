@@ -32,3 +32,14 @@ export async function taskExist(req:Request, res:Response, next: NextFunction) {
     })
   }
 }
+
+export function taskBelongsToProject(req:Request, res:Response, next: NextFunction) {
+  if(req.task.project.toString() !== req.project.id.toString()) {
+    const error = new Error('The Task doesn\'t exist in the Project' )
+    return res.status(400).json({
+      error: error.message
+    })
+  }
+
+  next()
+}
