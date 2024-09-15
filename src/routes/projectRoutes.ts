@@ -3,7 +3,8 @@ import { body, param } from 'express-validator'
 import { ProjectController } from '../controllers/Project.controller'
 import { handleInputErrors } from '../middleware/validation'
 import { TaskController } from '../controllers/Task.controller'
-import { validateProjectExist } from '../middleware/project'
+import { projectExist } from '../middleware/project'
+import { taskExist } from '../middleware/task'
 
 const router = Router()
 
@@ -41,7 +42,7 @@ router.delete('/:id',
 /* Routes for Tasks */
 
 // Este endpoint valida projectId en todos los endpoints donde venga
-router.param('projectId', validateProjectExist)
+router.param('projectId', projectExist)
 
 router.post('/:projectId/tasks',
   body('name').trim().notEmpty().withMessage('Task\'s name is required'),
@@ -53,6 +54,8 @@ router.post('/:projectId/tasks',
 router.get('/:projectId/tasks',
   TaskController.getProjectTasks
 )
+
+router.param('taskId', taskExist)
 
 router.get('/:projectId/tasks/:taskId',
   param('taskId').isMongoId().withMessage('Invalid ID'),

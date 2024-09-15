@@ -33,24 +33,15 @@ export class TaskController {
 
   static getTaskById = async (req:Request, res: Response) => {
     try {
-      const { taskId } = req.params
-      const task = await Task.findById(taskId)
 
-      if(!task) {
-        const error = new Error('The Task doesn\'t exist' )
-        return res.status(404).json({
-          error: error.message
-        })
-      }
-
-      if(task.project.toString() !== req.project.id) {
+      if(req.task.project.toString() !== req.project.id) {
         const error = new Error('The Task doesn\'t exist in the Project' )
         return res.status(400).json({
           error: error.message
         })
       }
 
-      res.json(task)
+      res.json(req.task)
     } catch (error) {
       res.status(500).json({error: 'Server Error'})
     }
@@ -58,26 +49,17 @@ export class TaskController {
   
   static updateTaskById = async (req:Request, res: Response) => {
     try {
-      const { taskId } = req.params
-      const task = await Task.findById(taskId)
 
-      if(!task) {
-        const error = new Error('The Task doesn\'t exist' )
-        return res.status(404).json({
-          error: error.message
-        })
-      }
-
-      if(task.project.toString() !== req.project.id) {
+      if(req.task.project.toString() !== req.project.id) {
         const error = new Error('The Task doesn\'t exist in the Project' )
         return res.status(400).json({
           error: error.message
         })
       }
 
-      task.name = req.body.name
-      task.description = req.body.description
-      await task.save()
+      req.task.name = req.body.name
+      req.task.description = req.body.description
+      await req.task.save()
 
       res.send('The Task has updated sucessfully!')
 
@@ -88,20 +70,10 @@ export class TaskController {
 
   static deleteTaskById = async (req:Request, res: Response) => {
     try {
-      const { taskId } = req.params
-      const task = await Task.findById(taskId)
 
-      if(!task) {
-        const error = new Error('The Task doesn\'t exist' )
-        return res.status(404).json({
-          error: error.message
-        })
-      }
+      req.project.tasks = req.project.tasks.filter(task => task._id.toString() !== req.task.id.toString())
 
-
-      req.project.tasks = req.project.tasks.filter(task => task._id.toString() !== taskId)
-
-      await Promise.allSettled([task.deleteOne(), req.project.save()])
+      await Promise.allSettled([req.task.deleteOne(), req.project.save()])
 
       res.send('The Task has deleted sucessfully!')
 
@@ -112,21 +84,11 @@ export class TaskController {
 
   static updateTaskStatus = async (req:Request, res: Response) => {
     try {
-      const { taskId } = req.params
-
-      const task = await Task.findById(taskId)
-
-      if(!task) {
-        const error = new Error('The Task doesn\'t exist' )
-        return res.status(404).json({
-          error: error.message
-        })
-      }
 
       const { status } = req.body
-      task.status = status
+      req.task.status = status
 
-      await task.save()
+      await req.task.save()
       res.send('The Task was succesfully updated!')
 
     } catch (error) {
