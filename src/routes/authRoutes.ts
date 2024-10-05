@@ -20,4 +20,10 @@ router.post('/create-account',
   AuthController.createAccount
 )
 
+router.post('/confirm-account',
+  body('token').notEmpty().withMessage('Token can\'t be empty'),
+  handleInputErrors,
+  AuthController.confirmAccount
+)
+
 export default router

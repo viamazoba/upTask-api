@@ -3,7 +3,6 @@ import User from "../models/User"
 import { hashPassword } from "../utils/auth"
 import Token from "../models/Token"
 import { generateToken } from "../utils/token"
-import { transport } from "../config/nodemailer"
 import { AuthEmail } from "../emails/AuthEmail"
 
 
@@ -45,7 +44,29 @@ export class AuthController {
       res.send('Account created succesfully, please check your email')
 
     } catch (error) {
-      res.status(500).json({ error: 'Hubo un error' })
+      res.status(500).json({ error: 'There was an error' })
+    }
+  }
+
+  static confirmAccount = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body
+
+      const tokenExist = await Token.findOne({ token })
+
+      if (!tokenExist) {
+        const error = new Error('Invalid Token')
+        return res.status(401).json({ error: error.message })
+      }
+
+      const user = await User.findById(tokenExist.user)
+      user.confirmed = true
+
+      await Promise.allSettled([user.save(), tokenExist.deleteOne()])
+      res.send('Account has been confirm sucessfully')
+
+    } catch (error) {
+      res.status(500).json({ error: 'There was an error' })
     }
   }
 }
