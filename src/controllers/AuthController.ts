@@ -202,4 +202,27 @@ export class AuthController {
       res.status(500).json({ error: 'There was an error' })
     }
   }
+
+  static updatePasswordWithToken = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.params
+
+      const tokenExist = await Token.findOne({ token })
+
+      if (!tokenExist) {
+        const error = new Error('Invalid Token')
+        return res.status(404).json({ error: error.message })
+      }
+
+      const user = await User.findById(tokenExist.user)
+      user.password = await hashPassword(req.body.password)
+
+      await Promise.allSettled([user.save(), tokenExist.deleteOne()])
+
+      res.send('Password was updated sucessfully!')
+
+    } catch (error) {
+      res.status(500).json({ error: 'There was an error' })
+    }
+  }
 }
