@@ -5,10 +5,12 @@ import { handleInputErrors } from '../middleware/validation'
 import { TaskController } from '../controllers/Task.controller'
 import { projectExist } from '../middleware/project'
 import { taskBelongsToProject, taskExist } from '../middleware/task'
+import { authenticate } from '../middleware/auth'
 
 const router = Router()
 
 router.post('/',
+  authenticate,
   body('projectName').trim().notEmpty().withMessage('Project\'s name is required'),
   body('clientName').trim().notEmpty().withMessage('Client\'s name is required'),
   body('description').trim().notEmpty().withMessage('Description project is required'),
@@ -20,7 +22,7 @@ router.get('/', ProjectController.getAllProjects)
 
 router.get('/:id',
   param('id').isMongoId().withMessage('Invalid ID'),
-  handleInputErrors, 
+  handleInputErrors,
   ProjectController.getProjectById
 )
 
@@ -29,13 +31,13 @@ router.put('/:id',
   body('projectName').trim().notEmpty().withMessage('Project\'s name is required'),
   body('clientName').trim().notEmpty().withMessage('Client\'s name is required'),
   body('description').trim().notEmpty().withMessage('Description project is required'),
-  handleInputErrors, 
+  handleInputErrors,
   ProjectController.updateProject
 )
 
 router.delete('/:id',
   param('id').isMongoId().withMessage('Invalid ID'),
-  handleInputErrors, 
+  handleInputErrors,
   ProjectController.deleteProjectById
 )
 
@@ -56,11 +58,11 @@ router.get('/:projectId/tasks',
 )
 
 router.param('taskId', taskExist)
-router.param('taskId',taskBelongsToProject)
+router.param('taskId', taskBelongsToProject)
 
 router.get('/:projectId/tasks/:taskId',
   param('taskId').isMongoId().withMessage('Invalid ID'),
-  handleInputErrors, 
+  handleInputErrors,
   TaskController.getTaskById
 )
 
@@ -68,13 +70,13 @@ router.put('/:projectId/tasks/:taskId',
   param('taskId').isMongoId().withMessage('Invalid ID'),
   body('name').trim().notEmpty().withMessage('Task\'s name is required'),
   body('description').trim().notEmpty().withMessage('Task\'s description is required'),
-  handleInputErrors, 
+  handleInputErrors,
   TaskController.updateTaskById
 )
 
 router.delete('/:projectId/tasks/:taskId',
   param('taskId').isMongoId().withMessage('Invalid ID'),
-  handleInputErrors, 
+  handleInputErrors,
   TaskController.deleteTaskById
 )
 
