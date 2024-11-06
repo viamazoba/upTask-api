@@ -19,7 +19,11 @@ export class ProjectController {
 
   static getAllProjects = async (req: Request, res: Response) => {
     try {
-      const projects = await Project.find({})
+      const projects = await Project.find({
+        $or: [
+          { manager: { $in: req.user.id } }
+        ]
+      })
       res.json(projects)
 
     } catch (error) {
@@ -39,6 +43,14 @@ export class ProjectController {
           error: error.message
         })
       }
+
+      if (project.manager.toString() !== req.user.id.toString()) {
+        const error = new Error('Permission denied')
+        return res.status(404).json({
+          error: error.message
+        })
+      }
+
       res.json(project)
 
     } catch (error) {
@@ -53,6 +65,13 @@ export class ProjectController {
 
       if (!project) {
         const error = new Error('The Project doesn\'t exist')
+        return res.status(404).json({
+          error: error.message
+        })
+      }
+
+      if (project.manager.toString() !== req.user.id.toString()) {
+        const error = new Error('Permission denied')
         return res.status(404).json({
           error: error.message
         })
@@ -79,6 +98,13 @@ export class ProjectController {
 
       if (!project) {
         const error = new Error('The Project doesn\'t exist')
+        return res.status(404).json({
+          error: error.message
+        })
+      }
+
+      if (project.manager.toString() !== req.user.id.toString()) {
+        const error = new Error('Permission denied')
         return res.status(404).json({
           error: error.message
         })
