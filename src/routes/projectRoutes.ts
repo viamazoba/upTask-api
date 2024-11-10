@@ -6,6 +6,7 @@ import { TaskController } from '../controllers/Task.controller'
 import { projectExist } from '../middleware/project'
 import { taskBelongsToProject, taskExist } from '../middleware/task'
 import { authenticate } from '../middleware/auth'
+import { TeamMemberController } from '../controllers/Team.controller'
 
 const router = Router()
 
@@ -86,6 +87,15 @@ router.post('/:projectId/tasks/:taskId/status',
   body('status').trim().notEmpty().withMessage('Status cannot have a empty value'),
   handleInputErrors,
   TaskController.updateTaskStatus
+)
+
+
+/** Routes for teams */
+
+router.post('/:projectId/team/find',
+  body('email').isEmail().toLowerCase().withMessage('Invalid E-mail'),
+  handleInputErrors,
+  TeamMemberController.findMemberByEmail
 )
 
 export default router
