@@ -16,7 +16,17 @@ export class NoteController {
       await Promise.allSettled([req.task.save(), note.save()])
       res.send('Note created secessfully')
     } catch (error) {
+      res.status(500).json({ error: 'There has been an error' })
+    }
+  }
 
+  static getTaskNotes = async (req: Request<{}, {}, INote>, res: Response) => {
+
+    try {
+      const notes = await Note.find({ task: req.task.id })
+      res.json(notes)
+    } catch (error) {
+      res.status(500).json({ error: 'There has been an error' })
     }
   }
 }
