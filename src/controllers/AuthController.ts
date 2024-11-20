@@ -233,4 +233,26 @@ export class AuthController {
   static user = async (req: Request, res: Response) => {
     return res.json(req.user)
   }
+
+  static updateProfile = async (req: Request, res: Response) => {
+    const { name, email } = req.body
+
+    const userExists = await User.findOne({ email })
+
+    if (userExists && userExists.id.toString() !== req.user.id.toString()) {
+      const error = new Error('Email is already registered')
+      return res.status(409).json({ error: error.message })
+    }
+
+    req.user.name = name
+    req.user.email = email
+
+    try {
+      await req.user.save()
+      res.send('Profile updated sucessfully')
+    } catch (error) {
+      res.status(500).send('There was an error')
+
+    }
+  }
 }
