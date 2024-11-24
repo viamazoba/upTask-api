@@ -29,25 +29,29 @@ router.get('/:id',
   ProjectController.getProjectById
 )
 
-router.put('/:id',
-  param('id').isMongoId().withMessage('Invalid ID'),
-  body('projectName').trim().notEmpty().withMessage('Project\'s name is required'),
-  body('clientName').trim().notEmpty().withMessage('Client\'s name is required'),
-  body('description').trim().notEmpty().withMessage('Description project is required'),
-  handleInputErrors,
-  ProjectController.updateProject
-)
-
-router.delete('/:id',
-  param('id').isMongoId().withMessage('Invalid ID'),
-  handleInputErrors,
-  ProjectController.deleteProjectById
-)
-
 /* Routes for Tasks */
 
 // Este endpoint valida projectId en todos los endpoints donde venga
 router.param('projectId', projectExist)
+
+router.put('/:projectId',
+  param('projectId').isMongoId().withMessage('Invalid ID'),
+  body('projectName').trim().notEmpty().withMessage('Project\'s name is required'),
+  body('clientName').trim().notEmpty().withMessage('Client\'s name is required'),
+  body('description').trim().notEmpty().withMessage('Description project is required'),
+  handleInputErrors,
+  hasAuthorization,
+  ProjectController.updateProject
+)
+
+router.delete('/:projectId',
+  param('projectId').isMongoId().withMessage('Invalid ID'),
+  handleInputErrors,
+  hasAuthorization,
+  ProjectController.deleteProjectById
+)
+
+
 
 router.post('/:projectId/tasks',
   hasAuthorization,
