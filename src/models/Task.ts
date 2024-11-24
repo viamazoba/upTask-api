@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
+import Note from "./Note";
 
 const taskStatus = {
   PENDING: 'pending',
@@ -62,6 +63,13 @@ export const TaskSchema: Schema = new Schema({
     }
   ]
 }, { timestamps: true })
+
+// Middleware (antes hooks)
+/** En este caso se utiliza el middleware para borrar todas las notas pertenecientes a la tarea, antes de borrar la tarea */
+TaskSchema.pre('deleteOne', { document: true }, async function () {
+  const taskId = this._id
+  if (!taskId) return await Note.deleteMany({ task: taskId })
+})
 
 const Task = mongoose.model<ITask>('Task', TaskSchema)
 export default Task
